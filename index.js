@@ -1,6 +1,7 @@
 (function () {
-    const { app, BrowserWindow, Menu } = require('electron');
+    const { app, BrowserWindow, Menu, globalShortcut } = require('electron');
 
+    let $about = null;
     let $window = null;
     let $mainMenu = null;
 
@@ -11,25 +12,49 @@
     const menu = [
         ...(isMac && [{ role: 'appMenu' }]),
         {
-            label: 'File',
+            role: 'fileMenu'
+        },
+        {
+            label: 'Developer',
             submenu: [
                 {
-                    label: 'Quit',
-                    click: () => app.quit(),
+                    role: 'reload',
+                },
+                {
+                    role: 'forcereload',
+                },
+                {
+                    type: 'separator',
+                },
+                {
+                    role: 'toggledevtools',
+                },
+            ]
+        },
+        {
+            label: 'About',
+            submenu: [
+                {
+                    label: 'Go to about',
+                    click: () => createWindow({ width: 200, height: 300 }, './src/pages.about.html', $about)
                 }
             ],
         }
     ];
 
-    function createWindow () {
-        $window = new BrowserWindow({
-            width: 500,
-            height: 600,
+    function createWindow (options, pagePath, $store) {
+        const { width, height } = options;
+        $store = new BrowserWindow({
+            width,
+            height,
             icon: `${__dirname}/src/icons/Icon_256x256.png`,
         });
 
-        $window.loadFile('./src/index.html');
-        $window.on('ready', () => $window = null);
+        globalShortcut.register('CmdOrCtrl+Shift+R', () => $store.reload());
+        globalShortcut.register(isMac ? 'Cmd+Option+I' : 'F12', () => $store.toggleDevTools());
+
+        $store.loadFile(pagePath);
+        $store.on('ready', () => $window = null);
     }
 
     function createMenu () {
@@ -46,7 +71,7 @@
         createWindow();
     }
 
-    app.on('ready', createWindow);
+    app.on('ready', () => createWindow({ widht: 500, height: 600 }, './src/index.html', $window));
     app.on('ready', createMenu);
     app.on('window-all-closed', closeWindows);
     app.on('activate', restart);

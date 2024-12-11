@@ -1,5 +1,5 @@
 (function () {
-    const { app, BrowserWindow, Menu, globalShortcut } = require('electron');
+    const { app, BrowserWindow, Menu, globalShortcut, ipcMain } = require('electron');
 
     let $about = null;
     let $window = null;
@@ -48,6 +48,11 @@
             width,
             height,
             icon: `${__dirname}/src/icons/Icon_256x256.png`,
+            webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false,
+            },
+
         });
 
         globalShortcut.register('CmdOrCtrl+Shift+R', () => $store.reload());
@@ -70,6 +75,10 @@
         if(isClosed) return;
         createWindow();
     }
+
+    ipcMain.on('image:minimize', (e, options) => {
+        /* ...  */
+    });
 
     app.on('ready', () => createWindow({ widht: 500, height: 600 }, './src/index.html', $window));
     app.on('ready', createMenu);

@@ -28,3 +28,7 @@ form.addEventListener('submit', (e) => {
         quality,
     });
 });
+
+ipcRenderer.on('image:done', () => {
+    /* finished  */
+});

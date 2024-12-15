@@ -1,17 +1,30 @@
 const os = require('os');
 const path = require('path');
-import { ipcRenderer } from 'electron';
+const { ipcRenderer } = require('electron');
 
 document.getElementById('output-path').innerText = path.join(os.homedir(), 'image-shrink');
 
-document.getElementById('image-form').addEventListener('submit', (e) => {
+const imgUploader = document.getElementById('uploader');
+const slider = document.getElementById('slider');
+const form = document.getElementById('image-form');
+
+const store = {
+    path: '',
+}
+
+imgUploader.addEventListener('change', (e) => {
+    const path = e.target.files[0].path;
+    console.log(e.target.files)
+    store.path = path;
+});
+
+form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const quality = document.getElementById('slider').getAttribute('value');
-    const imgPath = document.getElementById('img').files[0].path;
+    const quality = slider.value;
 
     ipcRenderer.send('image:minimize', {
-        imgPath,
+        path: store.path,
         quality,
     });
 });

@@ -78,6 +78,7 @@
 
     ipcMain.on('image:minimize', (e, options) => {
         /* ...  */
+        console.log(options)
     });
 
     app.on('ready', () => createWindow({ widht: 500, height: 600 }, './src/index.html', $window));

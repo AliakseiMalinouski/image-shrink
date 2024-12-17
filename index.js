@@ -1,5 +1,6 @@
 (function () {
     const { app, BrowserWindow, Menu, globalShortcut, ipcMain } = require('electron');
+    const log = require('electron-log');
 
     let $about = null;
     let $window = null;
@@ -60,11 +61,15 @@
 
         $store.loadFile(pagePath);
         $store.on('ready', () => $window = null);
+
+        log.info('app is ready');
     }
 
     function createMenu () {
         $mainMenu = Menu.buildFromTemplate(menu);
         Menu.setApplicationMenu($mainMenu);
+
+        log.info('menu is ready');
     }
 
     function closeWindows () {
@@ -79,7 +84,7 @@
     ipcMain.on('image:minimize', (e, options) => {
         /* ...  */
         console.log(options)
-        $window.webContents.send('image:dome');
+        $window.webContents.send('image:done');
     });
 
     app.on('ready', () => createWindow({ widht: 500, height: 600 }, './src/index.html', $window));
